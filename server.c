@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -13,14 +12,13 @@
 
 int main() {
 	struct sockaddr_in sin;
-	int len;
-	int s, new_s;
+	int s, new_s, len;
 	time_t t;
 	struct tm *tm;
 	FILE *timef;
 
 	/*address data structure*/
-	memset(&sin, 0, sizeof(sin));	
+	bzero(&sin, sizeof(sin));
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_port = htons(SERVER_PORT);
@@ -28,12 +26,25 @@ int main() {
 	/*passive open*/
 	if ((s = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("socket err");
-		exit(1);
+		return 1;	
 	}
 	
 	if ((bind(s, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
 		perror("bind error");
-		exit(1);
+		return 2;	
+	}
+
+	switch (fork()) {
+		case -1:
+			perror("fork error");
+			return 3;
+			break;
+		default:
+			close(s);
+			return 0;
+			break;
+		case 0:
+			break;
 	}
 
 	listen(s, MAX_PENDING);
@@ -43,7 +54,17 @@ int main() {
 
 		if ((new_s = accept(s, (struct sockaddr *)&sin, &len)) < 0) {
 			perror("accept error");
-			exit(1);
+			return 4;
+		}
+
+		if ((timef = fdopen(new_s, "w")) == NULL) {
+			perror("fdopen error");
+			return 5;
+		}
+
+		if((t = time(NULL)) < 0) {
+			perror("time error");
+			return 6;
 		}
 		
 		tm = gmtime(&t);
