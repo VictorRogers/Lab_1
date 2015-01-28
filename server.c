@@ -17,18 +17,19 @@ int main() {
 	struct tm *tm;
 	FILE *timef;
 
-	/*address data structure*/
+	//Address Data Structure
 	bzero(&sin, sizeof(sin));
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_port = htons(SERVER_PORT);
 
-	/*passive open*/
+	//Open Socket
 	if ((s = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("socket err");
 		return 1;	
 	}
-	
+
+	//Bind socket to address	
 	if ((bind(s, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
 		perror("bind error");
 		return 2;	
@@ -39,10 +40,12 @@ int main() {
 			perror("fork error");
 			return 3;
 			break;
+		//Close top socket and end parent process
 		default:
 			close(s);
 			return 0;
 			break;
+		//Daemon listens and enters loop to accept connections
 		case 0:
 			break;
 	}
@@ -56,6 +59,8 @@ int main() {
 			perror("accept error");
 			return 4;
 		}
+		
+		//Intercept Sigterm Here
 
 		if ((timef = fdopen(new_s, "w")) == NULL) {
 			perror("fdopen error");
