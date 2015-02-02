@@ -25,19 +25,19 @@ int main() {
 
 	//Open Socket
 	if ((s = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-		perror("socket err");
+		perror("Error creating while creating socket");
 		return 1;	
 	}
 
 	//Bind socket to address	
 	if ((bind(s, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
-		perror("bind error");
+		perror("Error while binding the port");
 		return 2;	
 	}
 
 	switch (fork()) {
 		case -1:
-			perror("fork error");
+			perror("Error while starting a child process");
 			return 3;
 			break;
 		//Close top socket and end parent process
@@ -56,7 +56,7 @@ int main() {
 		len = sizeof(sin);
 
 		if ((new_s = accept(s, (struct sockaddr *)&sin, &len)) < 0) {
-			perror("accept error");
+			perror("Error while accepting the connection");
 			return 4;
 		}
 		
