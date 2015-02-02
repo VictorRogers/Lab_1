@@ -12,7 +12,7 @@
 
 int main() {
 	struct sockaddr_in sin;
-	int s, new_s, len;
+  unsigned int s, new_s, len;
 	time_t t;
 	struct tm *tm;
 	FILE *timef;
