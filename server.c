@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -26,13 +27,13 @@ int main() {
 	//Open Socket
 	if ((s = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("Error while creating socket");
-		return 1;	
+		exit(EXIT_FAILURE);	
 	}
 
 	//Bind socket to address	
 	if ((bind(s, (struct sockaddr *)&sin, sizeof(sin))) < 0) {
 		perror("Error while binding the port");
-		return 2;	
+		exit(EXIT_FAILURE);	
 	}
 
 	switch (fork()) {
@@ -57,19 +58,19 @@ int main() {
 
 		if ((new_s = accept(s, (struct sockaddr *)&sin, &len)) < 0) {
 			perror("Error while accepting the connection");
-			return 4;
+			exit(EXIT_FAILURE);	
 		}
 		
 		//Intercept Sigterm Here
 
 		if ((timef = fdopen(new_s, "w")) == NULL) {
 			perror("fdopen error");
-			return 5;
+			exit(EXIT_FAILURE);	
 		}
 
 		if((t = time(NULL)) < 0) {
 			perror("time error");
-			return 6;
+			exit(EXIT_FAILURE);	
 		}
 		
 		tm = gmtime(&t);
