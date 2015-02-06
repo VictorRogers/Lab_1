@@ -25,7 +25,7 @@ int main() {
 
 	//Open Socket
 	if ((s = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-		perror("Error creating while creating socket");
+		perror("Error while creating socket");
 		return 1;	
 	}
 
